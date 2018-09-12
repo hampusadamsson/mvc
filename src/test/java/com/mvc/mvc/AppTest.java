@@ -8,6 +8,6 @@ public class AppTest {
 
     @Test
     public void testDummy(){
-        Assert.assertTrue(1==1);
+        Assert.assertTrue(1==2);
     }
 }
