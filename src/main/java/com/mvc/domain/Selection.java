@@ -1,28 +1,59 @@
 package com.mvc.domain;
 
+import com.mvc.utils.POSSingleton;
+import com.mvc.utils.VectorizerSingleton;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.mvc.utils.Tokenizer.splitTextIntoTokens;
+
 public class Selection {
     private String name;
-
-    private List<Token> selection;
     private int length;
+    private int sentenceLength;
     private String sentiment;
     private String topic;
-    private String vector;
+    private double[] averageVector;
+    private List<Token> selection;
 
     public Selection() {
     }
 
-    public float[] getAverageVector(){
-        List<float[]> vectors = this.selection.stream().map(Token::getVector).collect(Collectors.toList());
-        int vecLen = vectors.get(0).length;
-        float[] averageVector = new float[vecLen];
+    public Selection(String selection) {
+        this.setName(selection);
+        String[] tokenStrings = splitTextIntoTokens(selection);
+        this.setSelection(this.stringsToTokens(tokenStrings));
+        this.setPosTags(tokenStrings);
+        this.setAverageVector(this.getAverageVector());
+        this.setLength(selection.length());
+        this.setLength(tokenStrings.length);
+    }
 
+    private void setPosTags(String[] tokenStrings){
+        List<POStag> posTagsFromTokens = POSSingleton.getInstance().getPosTagsFromTokens(tokenStrings);
+        for (int i = 0; i < posTagsFromTokens.size(); i++) {
+            this.getSelection().get(i).setPartOfSpeech(posTagsFromTokens.get(i));
+        }
+    }
+
+    List<Token> stringsToTokens(String[] tokenStrings){
+        return Arrays.stream(tokenStrings).map(Token::new).collect(Collectors.toList());
+    }
+
+    List<Token> getSimilarTokens(int nrTokensToReturn){
+        double[] vec = this.getAverageVector();
+        return VectorizerSingleton.getInstance().getMostSimilarStrings(vec, nrTokensToReturn);
+    }
+
+    public double[] getAverageVector(){
+        List<double[]> vectors = this.selection.stream().filter(Token::hasVector).map(Token::getVector).collect(Collectors.toList());
+        int vecLen = vectors.size()>0 ? vectors.get(0).length : 0;
+        double[] averageVector = new double[vecLen];
         for (int i = 0; i < vecLen; i++) {
             int finalI = i;
-            double avg = vectors.stream().map(v -> v[finalI]).mapToDouble(Float::doubleValue).average().orElse(Double.NaN);
+            double avg = vectors.stream().map(v -> v[finalI]).mapToDouble(Double::doubleValue).average().orElse(Double.NaN);
             averageVector[i] = (float)avg;
         }
         return averageVector;
@@ -68,13 +99,22 @@ public class Selection {
         this.topic = topic;
     }
 
-    public String getVector() {
-        return vector;
+    public void setAverageVector(double[] averageVector) {
+        this.averageVector = averageVector;
     }
 
-    public void setVector(String vector) {
-        this.vector = vector;
+    public void print(){
+        System.out.println(this.name);
+        System.out.println("--------------------------");
+        this.getSelection().forEach(Token::print);
     }
 
+    public int getSentenceLength() {
+        return sentenceLength;
+    }
+
+    public void setSentenceLength(int sentenceLength) {
+        this.sentenceLength = sentenceLength;
+    }
 }
 
