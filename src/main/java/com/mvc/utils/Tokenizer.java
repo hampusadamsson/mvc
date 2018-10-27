@@ -5,6 +5,7 @@ public class Tokenizer {
 
     public static String[] splitTextIntoTokens(String sentence){
         return sentence.split(REGEX);
+        //return sentence.split(" ");
     }
 
 }

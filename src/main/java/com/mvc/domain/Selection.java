@@ -22,12 +22,12 @@ public class Selection {
     }
 
     public Selection(String selection) {
-        this.setName(selection);
         String[] tokenStrings = splitTextIntoTokens(selection);
+        this.setName(selection);
         this.setSelection(this.stringsToTokens(tokenStrings));
         this.setPosTags(tokenStrings);
         this.setAverageVector(this.getAverageVector());
-        this.setLength(selection.length());
+        this.setSentenceLength(selection.length());
         this.setLength(tokenStrings.length);
     }
 
