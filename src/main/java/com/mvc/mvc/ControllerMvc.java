@@ -31,7 +31,7 @@ public class ControllerMvc {
         double[] vectorFromString = VectorizerSingleton.getInstance().getVectorFromString(text);
         List<Token> mostSimilarStrings = new ArrayList<>();
         if(!Objects.isNull(vectorFromString)){
-            mostSimilarStrings = VectorizerSingleton.getInstance().getMostSimilarStrings(vectorFromString, 10);
+            mostSimilarStrings = VectorizerSingleton.getInstance().getMostSimilarStrings(vectorFromString, 20);
         }
         return mostSimilarStrings;
     }
